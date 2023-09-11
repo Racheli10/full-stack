@@ -44,8 +44,53 @@ app.get('/', (req , res) => {
 1. install sql lite from [here](https://sqlitebrowser.org/dl/)
 1. create a new file (you can call it what ever you want), in the same dir as your tsconfig.json and package.json
 1. change the file name and path in the .env file. **(DATABASE_URL="file:../db.db")**
-## show information from database
+1. optional add data (tables and rows to the db)
+1. run ``` npx prisma db pull ```
+1. run ``` npx prisma generate ```
 
-## connect it to the client 
+## create db connection 
+1. create a file name **dbConnection.ts**
+1. in this file write 
+``` 
+import { PrismaClient } from '@prisma/client'
+export const prismaDB = new PrismaClient()
+```
+## create a new api end point and show information from database
+1. create a router 
+``` 
+ import { Router} from 'express'
+ import { prismaDB } from './dbConnection.ts'
+ export const routerName = Router(); // create the router
+```
+2. create api endpoint 
+```
+routerName.get('/example', async (req , response) => {
+    const data = await prismaDB.table.findMany(); // get the data from our sql db  
+    response.send(data); // send the data to the user
+})
+```
+## create a table using prisma
+```
+model books {
+  id   Int     @id @default(autoincrement())
+  name String
+  author String
+}
+```
+and then run  ``` npx prisma db push ``` or use ``` npx prisma migrate dev ``` when in production.
 
 ## HW
+create 5 tables using prisma 
+authors, books, authorsOfBooks (many to many) , categoryOfBook (one to many), category
+create a 3 pages to display the data display books, display category, display authors
+
+## create react app using vite in the client dir
+1. adding cors to your backend ``` npm i cors ```
+1. adding types cors to your backend ``` npm i @types/cors ```
+1. adding cors 
+```
+import cors from 'cors'
+app.use(cors({
+    origin: ['http://localhost:5173']
+}))
+```
